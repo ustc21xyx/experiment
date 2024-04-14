@@ -1,0 +1,35 @@
+MODULE main
+VAR
+pr1: process prc(pr2.st, turn, TRUE);
+pr2: process prc(pr1.st, turn, FALSE);
+turn: boolean;
+ASSIGN
+init(turn) := FALSE;
+-- safety
+LTLSPEC G!((pr1.st = c) & (pr2.st = c))
+-- liveness
+LTLSPEC G((pr1.st = t) -> F (pr1.st = c))
+LTLSPEC G((pr2.st = t) -> F (pr2.st = c))
+-- ‘negation’ of strict sequencing (desired to be false)
+LTLSPEC G(pr1.st=c ->(G pr1.st=c | (pr1.st=c U
+(!(pr1.st=c)&G !(pr1.st=c) | ((!(pr1.st=c)) U pr2.st=c)))))
+MODULE prc(other-st, turn, myturn)
+VAR
+st: {n, t, c};
+ASSIGN
+init(st) := n;
+next(st) :=
+case
+(st = n) : {t,n};
+(st = t) & (other-st = n) : c;
+((st = t) & (other-st = t) & (turn = myturn)): c;
+(st = c) : {c,n};
+TRUE : st;
+esac;
+next(turn) :=
+case
+(turn = myturn) & (st=c): !turn;
+TRUE : turn;
+esac;
+FAIRNESS running
+FAIRNESS !(st = c)
