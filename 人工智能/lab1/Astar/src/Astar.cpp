@@ -20,6 +20,11 @@ struct Search_Cell
     int h;
     int g;
     // TODO: 定义搜索状态
+    //需要所在位置的横纵坐标x，y，当前食物剩余量t, 父节点f
+    int x;
+    int y;
+    int t;
+    Search_Cell *f;
 
 };
 
@@ -31,10 +36,13 @@ struct CompareF {
 };
 
 // TODO: 定义启发式函数
-void Heuristic_Funtion()
+int Heuristic_Funtion(Search_Cell *p, pair<int,int> end_point)
 {
-    return;
+    //定义为曼哈顿距离
+    return abs(end_point.first - p->x) + abs( end_point.second - p->y); 
 }
+
+
 
 void Astar_search(const string input_file, int &step_nums, string &way)
 {
@@ -88,7 +96,10 @@ void Astar_search(const string input_file, int &step_nums, string &way)
 
     Search_Cell *search_cell = new Search_Cell;
     search_cell->g = 0;
-    search_cell->h = 0; // Heuristic_Funtion();
+    search_cell->h = Heuristic_Funtion(search_cell , end_point);
+    search_cell->x = start_point.first;
+    search_cell->y = start_point.second;
+    search_cell->f = NULL;
 
     priority_queue<Search_Cell *, vector<Search_Cell *>, CompareF> open_list;
     vector<Search_Cell *> close_list;
