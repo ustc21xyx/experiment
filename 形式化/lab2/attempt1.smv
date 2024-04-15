@@ -1,18 +1,31 @@
-MOUDLE main
+MODULE main
 VAR
-pr1: {n, t ,c};
-pr2: {n, t, c};
--- use random to make choice(pr1 or pr2)
-random: boolean;
+pr1: process prc(pr2.st);
+pr2: process prc(pr1.st);
+--safety
+LTLSPEC G!((pr1.st = c) & (pr2.st = c))
+-- liveness
+LTLSPEC G((pr1.st = t) -> F (pr1.st = c))
+LTLSPEC G((pr2.st = t) -> F (pr2.st = c))
+-- non-blocking
+CTLSPEC AG( (pr1.st = n) -> (EX pr1.st = t) )
+CTLSPEC AG( (pr2.st = n) -> (EX pr2.st = t) )
+--no strict sequencing
+CTLSPEC EF ( pr1.st = c & E[(pr1.st = c) U (!(pr1.st = c) & E [!(pr2.st = c) U (pr1.st = c)])] )
+CTLSPEC EF ( pr1.st = c & E[(pr1.st = c) U (!(pr1.st = c) & E [!(pr2.st = c) U (pr1.st = c)])] )
 
-ASSIGN 
-init(pr1) :n;
-init(pr2) :n;
-next(random):= 
+MODULE prc(other-st)
+VAR
+st: {n, t, c};
+ASSIGN
+init(st) :=n;
+next(st) :=
 case
-    TRUE: {TRUE , FALSE}
-esac
+    (st = n): t;
+    (st = t) & (other-st != c) :c;
+    (st = c): n;
+    TRUE :st;
+esac;
 
-next(pr1) :=
-case
+FAIRNESS running
 
