@@ -55,6 +55,8 @@ GROUP BY Borrow.Reader_ID
 ORDER BY COUNT(*) DESC
 LIMIT 20
 
+DROP VIEW Borrow_detail
+
 CREATE VIEW Borrow_Detail 
 AS
 SELECT Borrow.Reader_ID  , Reader.name as Reader_name , Borrow.book_ID , Book.name as Book_name , Borrow.Borrow_Date
