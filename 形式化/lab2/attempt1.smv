@@ -1,0 +1,18 @@
+MOUDLE main
+VAR
+pr1: {n, t ,c};
+pr2: {n, t, c};
+-- use random to make choice(pr1 or pr2)
+random: boolean;
+
+ASSIGN 
+init(pr1) :n;
+init(pr2) :n;
+next(random):= 
+case
+    TRUE: {TRUE , FALSE}
+esac
+
+next(pr1) :=
+case
+
