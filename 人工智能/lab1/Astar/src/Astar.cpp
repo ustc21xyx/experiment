@@ -41,7 +41,62 @@ int Heuristic_Funtion(Search_Cell *p, pair<int,int> end_point)
     //定义为曼哈顿距离
     return abs(end_point.first - p->x) + abs( end_point.second - p->y); 
 }
+//TODO add two function
+bool isEqualCell(Search_Cell * firstCell,Search_Cell* secondCell){
+    return (firstCell->t == secondCell->t)&&(firstCell->x == secondCell->x)&&(firstCell->y == secondCell->y);
+}
 
+Search_Cell* isInPriorityQueue(priority_queue<Search_Cell *, vector<Search_Cell *>, CompareF> que, Search_Cell * cell)
+{
+    while(!que.empty()){
+       Search_Cell *tmpCell = que.top();
+       if( isEqualCell(tmpCell,cell)){
+        return tmpCell;
+       }
+       que.pop();
+    }
+    return NULL;
+}
+
+bool isInVector(vector<Search_Cell*> vec, int x,int y,int t){
+    for(int i=0;i<vec.size();i++){
+        if(vec[i]->x == x &&vec[i]->y == y && vec[i]->t == t){
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<Search_Cell* > cellCanReach(Search_Cell *curCell, Map_Cell** Map,int M,int N, int T,vector<Search_Cell *> closeCell, pair<int,int> end_point){
+    int  x = curCell->x;
+    int y = curCell->y;
+    vector<Search_Cell *> reach;
+    vector<pair<int,int> > directs={{1,0},{0,1},{-1,0},{0,-1}};
+    for(int i=0;i<directs.size();i++){
+        int t = curCell->t;
+        pair<int,int> direct=directs[i];
+        if((x+direct.first>=0)&&(x+direct.first<M)&&(y+direct.second>=0)&&(y+direct.second<N)&&(Map[x+direct.first][y+direct.second].type!=1)){
+            int type=Map[x+direct.first][y+direct.second].type;
+            if(curCell->t <= 1 && type == 0){
+                continue;
+            }
+            if(type == 2) t = T+1;
+            if(!isInVector(closeCell,x+direct.first,y+direct.second,t-1)){
+                Search_Cell* addCell = new Search_Cell;
+                addCell->x = x+direct.first;
+                addCell->y = y+direct.second;
+                addCell->t = t-1;
+                addCell->g = curCell->g+1;
+                addCell->h = Heuristic_Funtion(addCell,end_point);
+                addCell->f = curCell;
+                reach.push_back(addCell);
+            }
+        }
+    }
+    return reach;
+    
+    
+}
 
 
 void Astar_search(const string input_file, int &step_nums, string &way)
@@ -96,18 +151,45 @@ void Astar_search(const string input_file, int &step_nums, string &way)
 
     Search_Cell *search_cell = new Search_Cell;
     search_cell->g = 0;
-    search_cell->h = Heuristic_Funtion(search_cell , end_point);
     search_cell->x = start_point.first;
     search_cell->y = start_point.second;
+    search_cell->h = Heuristic_Funtion(search_cell , end_point);
     search_cell->f = NULL;
+    search_cell->t = T;
 
     priority_queue<Search_Cell *, vector<Search_Cell *>, CompareF> open_list;
     vector<Search_Cell *> close_list;
     open_list.push(search_cell);
-
+    int flag=0;
     while(!open_list.empty())
     {
         // TODO: A*搜索过程实现
+        Search_Cell* curCell = open_list.top();
+        if((curCell->x == end_point.first)&&(curCell->y == end_point.second)){
+            flag = 1;
+            break;
+        }
+        else{
+            open_list.pop();
+            close_list.push_back(curCell);
+            vector<Search_Cell*> reach= cellCanReach(curCell,Map,M,N,T,close_list,end_point);
+            for(int i=0;i<reach.size();i++){
+                Search_Cell* tmp;
+                Search_Cell*  tarCell= reach[i];
+                if(!(tmp=isInPriorityQueue(open_list,reach[i]))){
+                    open_list.push(tarCell);
+                }
+                else{
+                    if(tmp->g > reach[i]->g){
+                        tmp->g = reach[i]->g;
+                        tmp->f = curCell;
+                        delete tarCell;
+                    }
+                }
+            }
+        }
+
+
 
     }
 
@@ -115,8 +197,19 @@ void Astar_search(const string input_file, int &step_nums, string &way)
     // TODO: 填充step_nums与way
     step_nums = -1;
     way = "";
+    if(flag){
+        step_nums = 0;
+        Search_Cell* curCell = open_list.top();
+        while(!((curCell->x == start_point.first)&&(curCell->y == start_point.second))){
+            Search_Cell* f = curCell->f;
+            map<pair<int,int>,char> direct = {{{1,0},'D'},{{0,1},'R'},{{-1,0},'U'},{{0,-1},'L'}};
+            way= string(1,direct[{curCell->x-f->x,curCell->y-f->y}])+way;
+            step_nums++;
+            curCell = f;
+        }
+    }
 
-    // ------------------------------------------------------------------
+    // ----------------------------------------------------------------
     // 释放动态内存
     for(int i = 0; i < M; i++)
     {
@@ -162,7 +255,7 @@ int main(int argc, char *argv[])
     string input_base = "../input/input_";
     string output_base = "../output/output_";
     // input_0为讲义样例，此处不做测试
-    for(int i = 1; i < 11; i++)
+    for(int i = 0; i < 11; i++)
     {
         int step_nums = -1;
         string way = "";
