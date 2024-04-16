@@ -31,7 +31,7 @@ struct Search_Cell
 // 自定义比较函数对象，按照 Search_Cell 结构体的 g + h 属性进行比较
 struct CompareF {
     bool operator()(const Search_Cell *a, const Search_Cell *b) const {
-        return (a->g + a->h) > (b->g + b->h); // 较小的 g + h 值优先级更高
+        return (a->g + a->h) >= (b->g + b->h); // 较小的 g + h 值优先级更高
     }
 };
 
