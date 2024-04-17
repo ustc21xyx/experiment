@@ -157,46 +157,46 @@ namespace ChineseChess
 
                     switch (pieceChar) {
                         case 'R':
-                            generateJuMoves(i, j, piece.color);
+                            generateJuMoves(j, i, piece.color);
                             break;
                         case 'C':
-                            generatePaoMoves(i, j, piece.color);
+                            generatePaoMoves(j, i, piece.color);
                             break;
                         case 'N':
-                            generateMaMoves(i, j, piece.color);
+                            generateMaMoves(j, i, piece.color);
                             break;
                         case 'B':
-                            generateXiangMoves(i, j, piece.color);
+                            generateXiangMoves(j, i, piece.color);
                             break;
                         case 'A':
-                            generateShiMoves(i, j, piece.color);
+                            generateShiMoves(j, i, piece.color);
                             break;
                         case 'K':
-                            generateJiangMoves(i, j, piece.color);
+                            generateJiangMoves(j, i, piece.color);
                             break;
                         case 'P':
-                            generateBingMoves(i, j, piece.color);
+                            generateBingMoves(j, i, piece.color);
                             break;
                         case 'r':
-                            generateJuMoves(i, j, piece.color);
+                            generateJuMoves(j, i, piece.color);
                             break;
                         case 'c':
-                            generatePaoMoves(i, j, piece.color);
+                            generatePaoMoves(j, i, piece.color);
                             break;
                         case 'n':
-                            generateMaMoves(i, j, piece.color);
+                            generateMaMoves(j, i, piece.color);
                             break;
                         case 'b':
-                            generateXiangMoves(i, j, piece.color);
+                            generateXiangMoves(j, i, piece.color);
                             break;
                         case 'a':
-                            generateShiMoves(i, j, piece.color);
+                            generateShiMoves(j, i, piece.color);
                             break;
                         case 'k':
-                            generateJiangMoves(i, j, piece.color);
+                            generateJiangMoves(j, i, piece.color);
                             break;
                         case 'p':
-                            generateBingMoves(i, j, piece.color);
+                            generateBingMoves(j, i, piece.color);
                             break;
                         default:
                             break;
